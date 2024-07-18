@@ -33,6 +33,8 @@ export default function modifyBaseOptions(options: Object) {
   options['system.traits.damageResistances'] = ['', MODES.DEFAULT_STRING_MODES, Object.entries(CONFIG.A5E.damageTypes), 'TAG_GROUP'];
   options['system.traits.damageVulnerabilities'] = ['', MODES.DEFAULT_STRING_MODES, Object.entries(CONFIG.A5E.damageTypes), 'TAG_GROUP'];
   options['system.traits.size'] = ['', MODES.OVERRIDE_ONLY, Object.entries(CONFIG.A5E.actorSizes), 'RADIO'];
+  options['system.traits.height'] = ['', MODES.OVERRIDE_ONLY, Object.entries(CONFIG.A5E.actorHeights), 'RADIO'];
+  options['system.traits.weight'] = ['', MODES.OVERRIDE_ONLY, Object.entries(CONFIG.A5E.actorWeights), 'RADIO'];
 
   // Add options for proficiencies
   options['system.proficiencies.armor'] = ['', MODES.DEFAULT_STRING_MODES, Object.entries(CONFIG.A5E.armor), 'TAG_GROUP'];
@@ -125,6 +127,10 @@ export default function modifyBaseOptions(options: Object) {
   delete options['system.resources.secondary.hideMax'];
   delete options['system.resources.tertiary.hideMax'];
   delete options['system.resources.quaternary.hideMax'];
+  delete options['system.resources.quinary.hideMax'];
+  delete options['system.resources.senary.hideMax'];
+  delete options['system.resources.septenary.hideMax'];
+  delete options['system.resources.octonary.hideMax'];
 
   // Delete movement and senses for derived data
   Object.keys(CONFIG.A5E.movement).forEach((m) => {

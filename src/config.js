@@ -97,7 +97,8 @@ A5E.PREPARED_STATES = {
 A5E.ROLL_MODE = {
   NORMAL: 0,
   ADVANTAGE: 1,
-  DISADVANTAGE: -1
+  DISADVANTAGE: -1,
+  PASSIVE: 2
 };
 
 /**
@@ -181,6 +182,32 @@ A5E.actorSizes = {
   huge: 'A5E.SizeHuge',
   grg: 'A5E.SizeGargantuan',
   titan: 'A5E.SizeTitanic'
+};
+/**
+ * The set of possible creature heights in the system.
+ * @enum {string}
+ */
+A5E.actorHeights = {
+  mini: 'A5E.SizeMiniture',
+  short: 'A5E.SizeShort',
+  avg: 'A5E.SizeAverage',
+  tall: 'A5E.SizeTall',
+  giant: 'A5E.SizeGiant',
+  tower: 'A5E.SizeTowering',
+  colo: 'A5E.SizeColossal'
+};
+/**
+ * The set of possible creature weights in the system.
+ * @enum {string}
+ */
+A5E.actorWeights = {
+  feat: 'A5E.SizeFeather',
+  light: 'A5E.SizeLight',
+  moderate: 'A5E.SizeModerate',
+  heavy: 'A5E.SizeHeavy',
+  hulk: 'A5E.SizeHulking',
+  massive: 'A5E.SizeMassive',
+  mountain: 'A5E.SizeMountain'
 };
 
 A5E.originItemTypes = [
@@ -334,6 +361,7 @@ A5E.conditions = {
   charmed: 'A5E.ConditionCharmed',
   confused: 'A5E.ConditionConfused',
   deafened: 'A5E.ConditionDeafened',
+  defeated: 'A5E.ConditionDefeated',
   doomed: 'A5E.ConditionDoomed',
   encumbered: 'A5E.ConditionEncumbered',
   fatigue: 'A5E.ConditionFatigue',
@@ -748,6 +776,7 @@ A5E.rangeValues = {
 A5E.resourceRecoveryOptions = {
   shortRest: 'A5E.RestShort',
   longRest: 'A5E.RestLong',
+  extendedRest: 'A5E.RestExtended',
   recharge: 'A5E.ItemRecharge',
   round: 'A5E.DurationRound',
   turn: 'A5E.DurationTurn',
@@ -762,7 +791,8 @@ A5E.resourceRecoveryOptions = {
 A5E.rollModes = {
   normal: 'A5E.RollModeNormal',
   advantage: 'A5E.RollModeAdvantage',
-  disadvantage: 'A5E.RollModeDisadvantage'
+  disadvantage: 'A5E.RollModeDisadvantage',
+  passive: 'A5E.RollModePassive'
 };
 
 // TODO: Localization - Add localizations for these roll types.

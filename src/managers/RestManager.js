@@ -18,26 +18,33 @@ export default class RestManager {
   }
 
   get restTypes() {
+    if (this.#type === 'extended') {
+      return ['shortRest', 'recharge', 'round', 'turn', 'minute', 'hour', 'extendedRest', 'day'];
+    }
     if (this.#type === 'long') {
       return ['shortRest', 'recharge', 'round', 'turn', 'minute', 'hour', 'longRest', 'day'];
     }
-
     return ['shortRest', 'recharge', 'round', 'turn', 'minute', 'hour'];
   }
 
   async restoreResources() {
     const {
-      consumeSupply, haven, recoverStrifeAndFatigue, restType
+      consumeSupply, haven, recoverStrifeAndFatigue, recoverSetStrifeAndFatigue, restType
     } = this.#restData;
 
-    // Restore long rest resources
-    if (this.#type === 'long') {
-      this.#adjustStrifeAndFatigue();
+    // Restore extended rest resources
+    if (this.#type === 'extended') {
+      this.#adjustSetStrifeAndFatigue();
       this.#restoreHitDice();
       this.#restoreHitPoints();
       await this.#removeTemporaryActiveEffects();
     }
-
+    // Restore long rest resources
+    if (this.#type === 'long') {
+      this.#adjustStrifeAndFatigueLR();
+      this.#restoreHitDiceLR();
+      await this.#removeTemporaryActiveEffects();
+    }
     // Optionally consume supply
     if (consumeSupply) this.#consumeSupply();
 
@@ -55,7 +62,7 @@ export default class RestManager {
 
     // Call Hook
     Hooks.callAll('a5e.restCompleted', this, {
-      consumeSupply, haven, restType, recoverStrifeAndFatigue
+      consumeSupply, haven, restType, recoverStrifeAndFatigue, recoverSetStrifeAndFatigue,
     });
   }
 
@@ -71,6 +78,30 @@ export default class RestManager {
     } else {
       this.#updates.actor['system.attributes.fatigue'] = Math.max(fatigue - 1, 0);
       this.#updates.actor['system.attributes.strife'] = Math.max(strife - 1, 0);
+    }
+  }
+
+  #adjustSetStrifeAndFatigue() {
+    const { recoverSetStrifeAndFatigue } = this.#restData;
+    const { strife, fatigue } = this.#actor.system.attributes;
+
+    if (!recoverSetStrifeAndFatigue) {
+    } else {
+      this.#updates.actor['system.attributes.fatigue'] = Math.max(fatigue - recoverSetStrifeAndFatigue, 0);
+      this.#updates.actor['system.attributes.strife'] = Math.max(strife - recoverSetStrifeAndFatigue, 0);
+    }
+  }
+
+
+  #adjustStrifeAndFatigueLR() {
+    const { haven, recoverStrifeAndFatigue } = this.#restData;
+    const { strife, fatigue } = this.#actor.system.attributes;
+
+    if (!recoverStrifeAndFatigue) {
+      this.#updates.actor['system.attributes.fatigue'] = fatigue + 1;
+    } else if (haven) {
+      this.#updates.actor['system.attributes.fatigue'] = fatigue === 1 ? 0 : fatigue;
+      this.#updates.actor['system.attributes.strife'] = strife === 1 ? 0 : strife;
     }
   }
 
@@ -105,6 +136,48 @@ export default class RestManager {
     const { updates, type } = this.#actor.HitDiceManager.getUpdateData();
     if (type === 'actor') this.#updates.actor = foundry.utils.mergeObject(this.#updates.actor, updates);
     if (type === 'embedded') this.#updates.items = this.#updates.items.concat(updates);
+  }
+
+  #restoreHitDiceLR() {
+    const { hitDice, prof } = this.#actor.system.attributes;
+
+    const expendedHitDice = Object.entries(hitDice).reduce((acc, [die, { current, total }]) => {
+      acc[die] = Math.max(total - current, 0);
+      return acc;
+    }, {});
+
+    const expendedHitDiceQuantity = Object.values(expendedHitDice)
+      .reduce((count, curr) => count + curr, 0);
+
+    const totalHitDiceQuantity = Object.values(hitDice)
+      .reduce((count, { total: curr }) => count + curr, 0);
+
+    const quantityToRecover = Math.floor(prof) || 1;
+
+    if (quantityToRecover >= expendedHitDiceQuantity) {
+      this.#updates.actor['system.attributes.hitDice'] = {
+        'd6.current': hitDice.d6.total,
+        'd8.current': hitDice.d8.total,
+        'd10.current': hitDice.d10.total,
+        'd12.current': hitDice.d12.total
+      };
+    } else {
+      for (let i = 0; i < quantityToRecover; i += 1) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const dieSize of Object.keys(hitDice).reverse()) {
+          if (expendedHitDice[dieSize] > 0) {
+            if (!this.#updates.actor[`system.attributes.hitDice.${dieSize}.current`]) {
+              this.#updates.actor[`system.attributes.hitDice.${dieSize}.current`] = hitDice[dieSize].current + 1;
+            } else {
+              this.#updates.actor[`system.attributes.hitDice.${dieSize}.current`] += 1;
+            }
+
+            expendedHitDice[dieSize] -= 1;
+            break;
+          }
+        }
+      }
+    }
   }
 
   #restoreHitPoints() {
@@ -153,11 +226,11 @@ export default class RestManager {
     const restoreSpellPointsOnShortRest = flags?.restoreSpellPointsOnShortRest ?? true;
     const restoreSpellSlotsOnShortRest = flags?.restoreSpellSlotsOnShortRest ?? false;
 
-    if (this.#type === 'long' || restoreSpellPointsOnShortRest) {
+    if (this.#type === 'long' || this.#type === 'extended' || restoreSpellPointsOnShortRest) {
       this.#updates.actor['system.spellResources.points.current'] = Math.max(spellResources.points.max, 0);
     }
 
-    if (this.#type === 'long' || restoreSpellSlotsOnShortRest) {
+    if (this.#type === 'long' || this.#type === 'extended' || restoreSpellSlotsOnShortRest) {
       Object.entries(spellResources.slots ?? {}).forEach(([level, { max }]) => {
         this.#updates.actor[`system.spellResources.slots.${level}.current`] = Math.max(max, 0);
       });

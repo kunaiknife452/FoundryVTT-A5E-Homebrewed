@@ -82,6 +82,8 @@ export default class BaseActorA5e extends Actor {
       senses: SensesConfigDialog,
       sensesBonus: SensesBonusConfigDialog,
       size: DetailsConfigDialog,
+      height: DetailsConfigDialog,
+      weight: DetailsConfigDialog,
       skill: SkillConfigDialog,
       skillBonus: SkillBonusConfigDialog,
       terrain: DetailsConfigDialog,
@@ -872,7 +874,7 @@ export default class BaseActorA5e extends Actor {
    * @param {Boolean} restOptions.consumeSupply
    * @param {Boolean} restOptions.haven
    * @param {Boolean} restOptions.recoverStrifeAndFatigue
-   * @param {'long' | 'short'} restOptions.restType
+   * @param {'extended' | 'long' | 'short'} restOptions.restType
    * @returns
    */
   async triggerRest(restOptions = {}) {
@@ -1541,6 +1543,28 @@ export default class BaseActorA5e extends Actor {
     this.#configure('size', title, data, options);
   }
 
+  configureWeightCategory(data = {}, options = {}) {
+    const title = localize('A5E.WeightCategoryConfigurationPrompt', { name: this.name });
+
+    data.heading ??= 'A5E.WeightCategory';
+    data.configObject ??= CONFIG.A5E.actorWeights;
+    data.propertyKey ??= 'system.traits.weight';
+    data.type ??= 'weight';
+
+    this.#configure('weight', title, data, options);
+  }
+
+  configureHeightCategory(data = {}, options = {}) {
+    const title = localize('A5E.HeightCategoryConfigurationPrompt', { name: this.name });
+
+    data.heading ??= 'A5E.HeightCategory';
+    data.configObject ??= CONFIG.A5E.actorHeights;
+    data.propertyKey ??= 'system.traits.height';
+    data.type ??= 'height';
+
+    this.#configure('height', title, data, options);
+  }
+
   configureSkill(data = {}, options = { width: 440 }) {
     const title = localize(
       'A5E.SkillConfigurationPrompt',
@@ -1702,7 +1726,7 @@ export default class BaseActorA5e extends Actor {
     const applyUnconscious = game.settings.get('a5e', 'automateUnconsciousApplication') ?? true;
 
     if (applyBloodied) automateHpConditions(this, changed, userId, 'bloodied');
-    if (applyUnconscious) automateHpConditions(this, changed, userId, 'unconscious');
+    if (applyUnconscious) automateHpConditions(this, changed, userId, 'defeated');
   }
 
   // -------------------------------------------------------------

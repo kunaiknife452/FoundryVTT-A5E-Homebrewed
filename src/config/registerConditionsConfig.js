@@ -29,6 +29,8 @@ function generateChanges(A5E) {
 
     deafened: [],
 
+    defeated: [],
+
     dead: [],
 
     doomed: [],
@@ -429,7 +431,19 @@ export default function registerConditionsConfig() {
       name: 'A5E.ConditionDeafened',
       img: 'icons/svg/deaf.svg',
       changes: changes.deafened,
-      duration: {}
+      duration: {},
+      flags: { core: { overlay: true } }
+    },
+    // Defeated
+    {
+      id: 'defeated',
+      _id: 'defeated00000000',
+      description: '<ul><li>A defeated creature is always prone, and is incapactiated while having more death save failure than successes.</li></ul>',
+      name: 'A5E.ConditionDefeated',
+      icon: 'icons/svg/stoned.svg',
+      changes: changes.defeated,
+      duration: {},
+      flags: { core: { overlay: true } }
     },
     // Dead
     {

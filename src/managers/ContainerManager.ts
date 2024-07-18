@@ -1,19 +1,19 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-console */
-import type ObjectItemA5e from '../documents/item/object';
-
 import SubObjectField from '../dataModels/fields/SubObjectField';
 
 export default class ContainerManager extends Map<string, SubObjectField> {
-  #item: InstanceType<typeof ObjectItemA5e>;
+  #item: typeof Item;
 
-  constructor(item: InstanceType<typeof ObjectItemA5e>) {
+  constructor(item: typeof Item) {
     if (!item) {
-      throw Error('Item is required to create a ContainerManager');
+      console.error('Item is required to create a ContainerManager');
+      return;
     }
 
     if (item.system?.objectType !== 'container') {
-      throw Error('Item must be a container to create a ContainerManager');
+      console.error('Item must be a container to create a ContainerManager');
+      return;
     }
 
     super();
@@ -37,17 +37,14 @@ export default class ContainerManager extends Map<string, SubObjectField> {
     const docUuids = [...this.values()].map((e) => e.uuid);
 
     if (parent.isEmbedded) {
-      const docs: unknown[] = docUuids.map((uuid) => fromUuidSync(uuid));
-      return docs as (InstanceType<typeof ObjectItemA5e> | null)[];
+      return docUuids.map((uuid) => fromUuidSync(uuid));
     }
 
     if (parent.pack) {
-      const p: Promise<(unknown | null)[]> = Promise.all(docUuids.map((uuid) => fromUuid(uuid)));
-      return p as Promise<(InstanceType<typeof ObjectItemA5e> | null)[]>;
+      return Promise.all(docUuids.map((uuid) => fromUuid(uuid)));
     }
 
-    const docs: unknown[] = docUuids.map((uuid) => fromUuidSync(uuid));
-    return docs as (InstanceType<typeof ObjectItemA5e> | null)[];
+    return docUuids.map((uuid) => fromUuidSync(uuid));
   }
 
   /** ************************************************
@@ -75,9 +72,7 @@ export default class ContainerManager extends Map<string, SubObjectField> {
       all.push(i);
 
       if (i?.system?.objectType === 'container') {
-        const subItems = i.containerItems?.allItems;
-        if (subItems instanceof Promise) subItems.then((si) => all.push(...(si ?? [])));
-        else all.push(...(subItems ?? []));
+        all.push(...(i?.containerItems?.allItems ?? []));
       }
     });
 
@@ -277,7 +272,7 @@ export default class ContainerManager extends Map<string, SubObjectField> {
     return item;
   }
 
-  static async createContainerOnSidebar(item: any, folderId: string | null = null): Promise<any> {
+  static async createContainerOnSidebar(item: any, folderId: string | null): Promise<any> {
     folderId = folderId || item.folder._id || null;
 
     await item.containerItems?.clean();

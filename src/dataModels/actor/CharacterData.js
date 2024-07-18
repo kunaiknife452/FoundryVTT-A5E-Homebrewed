@@ -72,7 +72,8 @@ export default class CharacterData extends BaseActorData {
 
         )
       }),
-      supply: new fields.NumberField({ required: true, initial: 0, integer: true })
+      supply: new fields.NumberField({ required: true, initial: 0, integer: true }),
+      gear: new fields.NumberField({ required: true, initial: 0, integer: true })
     });
   }
 }
