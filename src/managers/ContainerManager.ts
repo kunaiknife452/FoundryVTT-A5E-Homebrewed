@@ -1,7 +1,5 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-console */
-import type ObjectItemA5e from '../documents/item/object';
-
 import SubObjectField from '../dataModels/fields/SubObjectField';
 
 export default class ContainerManager extends Map<string, SubObjectField> {

@@ -7,9 +7,11 @@ import Section from '../../components/Section.svelte';
 export let rollData = {};
 
 const damageButtons = [
-	[1, 'Advantage'],
-	[0, 'Normal'],
-	[-1, 'Disadvantage'],
+    [1, "Advantage"],
+    [0, "Normal"],
+    [-1, "Disadvantage"],
+    [2, "Passive"],
+
 ];
 
 const expertiseDice = [

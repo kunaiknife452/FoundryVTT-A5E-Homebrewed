@@ -119,6 +119,7 @@ const ROLL_MODE = {
 	NORMAL: 0,
 	ADVANTAGE: 1,
 	DISADVANTAGE: -1,
+  PASSIVE: 2
 };
 
 /* ------------------------------------------------- */

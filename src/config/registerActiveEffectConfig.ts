@@ -27,6 +27,7 @@ export default function registerActiveEffectConfig() {
 		corruption: 'systems/a5e/assets/icons/corruption.svg',
 		dazzled: 'systems/a5e/assets/icons/dazzled.svg',
 		deafened: 'icons/svg/deaf.svg',
+    defeated: 'icons/svg/stoned.svg',
 		dead: 'icons/svg/skull.svg',
 		doomed: 'systems/a5e/assets/icons/doomed.svg',
 		encumbered: 'systems/a5e/assets/icons/encumbered.svg',

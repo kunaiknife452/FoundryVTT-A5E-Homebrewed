@@ -230,6 +230,18 @@
 			"path": "lang/en.json"
 		}
 	],
+  "media": [
+    {
+        "type": "cover",
+        "loop": false,
+        "flags": {}
+    },
+    {
+        "type": "setup",
+        "url": "systems/a5e/ui/a5e-cover.png",
+        "thumbnail": "systems/a5e/ui/a5e-cover.png"
+    }
+  ],
 	"socket": true,
 	"grid": {
 		"distance": 5,
