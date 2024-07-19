@@ -212,7 +212,7 @@ const actorSizes = {
  * The set of possible creature heights in the system.
  * @enum {string}
  */
-A5E.actorHeights = {
+const actorHeights = {
   mini: 'A5E.SizeMiniture',
   short: 'A5E.SizeShort',
   avg: 'A5E.SizeAverage',
@@ -225,7 +225,7 @@ A5E.actorHeights = {
  * The set of possible creature weights in the system.
  * @enum {string}
  */
-A5E.actorWeights = {
+const actorWeights = {
   feat: 'A5E.SizeFeather',
   light: 'A5E.SizeLight',
   moderate: 'A5E.SizeModerate',
@@ -1787,6 +1787,8 @@ const A5E = {
   abilityActivationTypesPlural,
   actionOptions,
   actorSizes,
+  actorHeights,
+  actorWeights,
   originItemTypes,
   alignments,
   ammunitionProperties,
