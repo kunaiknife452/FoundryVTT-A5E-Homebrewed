@@ -42,7 +42,7 @@ export default class RestManager {
     // Restore long rest resources
     if (this.#type === 'long') {
       this.#adjustStrifeAndFatigueLR();
-      this.#restoreHitDiceLR();
+      this.#restoreHitDice();
       await this.#removeTemporaryActiveEffects();
     }
     // Optionally consume supply
