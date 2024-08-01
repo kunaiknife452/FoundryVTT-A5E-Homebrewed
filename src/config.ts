@@ -1899,4 +1899,6 @@ const A5E = {
 // These are too complex to be typed to they go after
 registerFilterConfig(A5E);
 
-export default A5E;
+// export default A5E;
+
+export { A5E };

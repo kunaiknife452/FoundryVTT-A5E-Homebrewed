@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 
 import type { Action } from 'types/action';
+import type { BaseActorA5e } from '../actor/base';
 import type { RevitalizeOptions } from './data';
 
 import MigrationRunnerBase from '../../migration/MigrationRunnerBase';
@@ -12,6 +13,7 @@ type SystemItemTypes = Exclude<foundry.documents.BaseItem.TypeNames, 'base'>;
 interface BaseItemA5e<ItemType extends SystemItemTypes = SystemItemTypes> {
   type: ItemType;
   system: DataModelConfig['Item'][ItemType];
+  parent: BaseActorA5e
 }
 
 /**
@@ -45,7 +47,7 @@ class BaseItemA5e extends Item {
   // *****************************************************************************************
   get sourceId(): string | null {
     // @ts-expect-error
-    return this._stats.compendiumSource?.id || this.flags.core?.sourceId || null;
+    return this._stats.compendiumSource || this.flags.core?.sourceId || null;
   }
 
   // *****************************************************************************************
@@ -94,7 +96,6 @@ class BaseItemA5e extends Item {
             ? await TextEditor.enrichHTML(action.description, {
               secrets: this.isOwner,
               relativeTo: this,
-              // @ts-expect-error
               rollData: this?.actor?.getRollData(this) ?? {}
             })
             : null,
@@ -102,7 +103,6 @@ class BaseItemA5e extends Item {
             ? await TextEditor.enrichHTML(this.system.description, {
               secrets: this.isOwner,
               relativeTo: this,
-              // @ts-expect-error
               rollData: this?.actor?.getRollData(this) ?? {}
             })
             : null,
@@ -111,7 +111,6 @@ class BaseItemA5e extends Item {
             ? await TextEditor.enrichHTML(this.system.unidentifiedDescription, {
               secrets: this.isOwner,
               relativeTo: this,
-              // @ts-expect-error
               rollData: this?.actor?.getRollData(this) ?? {}
             })
             : null,
@@ -160,7 +159,7 @@ class BaseItemA5e extends Item {
     });
   }
 
-  async revitalize(options: RevitalizeOptions = {}): Promise<this | null> {
+  async revitalize(options: RevitalizeOptions = {}): Promise<Record<string, any> | null> {
     options.notify ??= true;
     options.update ??= true;
     options.updateImg ??= true;
@@ -216,7 +215,8 @@ class BaseItemA5e extends Item {
     const updates: Record<string, any> = {
       name: options.updateName ? compendiumData.name : currentData.name,
       img: options.updateImg ? compendiumData.img : currentData.img,
-      system: foundry.utils.deepClone(compendiumData.system)
+      system: foundry.utils.deepClone(compendiumData.system),
+      _stats: { compendiumSource: sourceId }
     };
 
     // TODO: Revitalize - Add support for grants
@@ -226,6 +226,25 @@ class BaseItemA5e extends Item {
 
     // Ignore favorite state
     updates.system.favorite = this.system.favorite;
+
+    // Ignore current uses
+    // @ts-expect-error
+    if (this.system.uses?.max) {
+      // @ts-expect-error
+      updates.system.uses.value = this.system.uses.value;
+    }
+
+    // Don't update some properties for archetypes
+    if (this.isType('archetype')) {
+      updates.system.spellcasting.ability.base = this.system.spellcasting.ability.base;
+    }
+
+    // Don't update some properties for classes
+    if (this.isType('class')) {
+      updates.system.classLevels = this.system.classLevels;
+      updates.system.hp = this.system.hp;
+      updates.system.spellcasting.ability.base = this.system.spellcasting.ability.base;
+    }
 
     // Don't update some properties for objects
     if (this.isType('object')) {
@@ -243,9 +262,6 @@ class BaseItemA5e extends Item {
 
       // Ignore quantity
       updates.system.quantity = this.system.quantity;
-
-      // Ignore current uses
-      updates.system.uses.value = this.system.uses.value;
     }
 
     // Don't update some properties for spells
@@ -254,14 +270,68 @@ class BaseItemA5e extends Item {
     }
 
     // TODO: Don't update some action properties
+    // @ts-expect-error
+    if (compendiumData.system.actions) {
+      // @ts-expect-error
+      const currentActions = this.system.actions;
+      // @ts-expect-error
+      const compendiaActions = compendiumData.system.actions;
 
-    // TODO: Update effects
+      const updatedActions = Object.entries(compendiaActions).reduce((acc, [actionId, action]) => {
+        const updatedAction = foundry.utils.deepClone(action) as Record<string, any>;
 
-    if (options.update) await this.update(updates, { diff: false, recursive: false });
+        const existing = currentActions[actionId];
+
+        if (!existing) {
+          acc[actionId] = updatedAction;
+          return acc;
+        }
+
+        // Ignore current action uses
+        // @ts-expect-error
+        if (action.uses?.value) {
+          foundry.utils.setProperty(updatedAction, 'uses.value', existing.uses?.value);
+        }
+
+        acc[actionId] = updatedAction;
+        return acc;
+      }, {});
+
+      updates.system.actions = updatedActions;
+    }
+
+    // Update effects
+    if (options.updateEffects) {
+      const currentEffects = [...this.effects];
+      // @ts-expect-error
+      const compendiaEffects = [...compendiumData.effects] as ActiveEffect[];
+
+      const updatedEffects = compendiaEffects.reduce((acc, effect) => {
+        const updatedEffect = foundry.utils.deepClone(effect);
+
+        const existing = currentEffects.find((e) => e._id === effect._id);
+        if (!existing) {
+          acc.push(updatedEffect);
+          return acc;
+        }
+
+        // Ignore flags
+        updatedEffect.flags = existing.flags;
+
+        acc.push(updatedEffect);
+        return acc;
+      }, [] as ActiveEffect[]);
+
+      updates.effects = updatedEffects;
+    }
+
+    if (options.update) {
+      await this.update(updates, { diff: false, recursive: false });
+    }
 
     if (options.notify !== false) ui.notifications?.info('Item revitalized.');
 
-    return this;
+    return updates;
   }
 
   /** @inheritdoc */
