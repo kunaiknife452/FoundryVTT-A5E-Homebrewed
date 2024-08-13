@@ -16,8 +16,57 @@
 			"requiresNoShield": false,
 			"requiresUnarmored": false
 		},
-		"actions": {},
-		"description": "<p>You refine your existing training to better respond to threats. You gain the <em>@UUID[Compendium.a5e.a5e-class-features.Item.gps1jbpps9trpk1w]{Watchful Eye}</em>&nbsp;trait of the <em>@UUID[Compendium.a5e.a5e-class-features.Item.25vr449svc15tmv6]{Steely Mien}</em>&nbsp;feature. If you already have it, select a second option. You also gain proficiency in the Perception and Insight skills or if you are already proficient, you gain an expertise die.</p>\n<p>Furthermore, as an action you can spend a point of exertion to ignore a number of levels of fatigue equal to your proficiency bonus for 1 hour.</p>",
+		"actions": {
+			"t1nSpgHOJD4m7dIx": {
+				"name": "Tireless Protector",
+				"activation": {
+					"type": "action",
+					"cost": 1,
+					"reactionTrigger": ""
+				},
+				"consumers": {
+					"C246AVeedRIvWee0": {
+						"type": "resource",
+						"default": true,
+						"classIdentifier": "",
+						"resource": "exertion",
+						"quantity": 1,
+						"restore": false,
+						"label": ""
+					}
+				},
+				"rolls": {},
+				"prompts": {},
+				"uses": {
+					"value": 0,
+					"max": "",
+					"per": "",
+					"recharge": {
+						"formula": "1d6",
+						"threshold": 6
+					}
+				},
+				"duration": {
+					"unit": "hour",
+					"value": 1
+				},
+				"id": "",
+				"default": false,
+				"description": "",
+				"descriptionOutputs": [
+					"item",
+					"action"
+				],
+				"img": "",
+				"ranges": {},
+				"target": {
+					"quantity": 0,
+					"scaling": {},
+					"type": ""
+				}
+			}
+		},
+		"description": "<p>You refine your existing training to better respond to threats. You gain the @UUID[Compendium.a5e.a5e-class-features.Item.gps1jbpps9trpk1w]{Watchful Eye}&nbsp;trait of the @UUID[Compendium.a5e.a5e-class-features.Item.25vr449svc15tmv6]{Steely Mien}&nbsp;feature. If you already have it, select a second option. You also gain proficiency in the Perception and Insight skills or if you are already proficient, you gain an expertise die.</p>\n<p>Furthermore, as an action you can spend a point of exertion to ignore a number of levels of fatigue equal to your proficiency bonus for 1 hour.</p>",
 		"favorite": false,
 		"secretDescription": "",
 		"source": "moarComplete",
@@ -41,7 +90,11 @@
 				"label": "Tireless Protector",
 				"features": {
 					"base": [
-						"Compendium.a5e.a5e-class-features.Item.gps1jbpps9trpk1w"
+						{
+							"uuid": "Compendium.a5e.a5e-class-features.Item.gps1jbpps9trpk1w",
+							"limitedReselection": true,
+							"selectionLimit": 1
+						}
 					],
 					"options": [],
 					"total": 0
@@ -78,12 +131,16 @@
 				}
 			}
 		},
-		"classes": "fighter"
+		"classes": "fighter",
+		"class": ""
 	},
-	"_id": "v0ebnmfp1y7bte6h",
 	"_stats": {
-		"coreVersion": "12",
+		"coreVersion": "12.330",
 		"systemId": "a5e",
-		"systemVersion": "0.19.17"
-	}
+		"systemVersion": "0.19.22",
+		"createdTime": 1723212528993,
+		"modifiedTime": 1723212535120,
+		"lastModifiedBy": "Glw114cHAVexdKTu"
+	},
+	"_id": "v0ebnmfp1y7bte6h"
 }
