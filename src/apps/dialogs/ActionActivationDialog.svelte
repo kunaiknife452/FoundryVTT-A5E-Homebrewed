@@ -1,6 +1,6 @@
 <script>
     import { getContext, setContext } from "svelte";
-    import { localize } from "#runtime/svelte/helper";
+    import { localize } from "#runtime/util/i18n";
     import { TJSDocument } from "#runtime/svelte/store/fvtt/document";
 
     import ConsumptionValidator from "../../utils/validators/ConsumptionValidator";
@@ -277,7 +277,7 @@
         padding-inline: 0.25rem;
 
         .warning {
-            font-family: $font-secondary;
+            font-family: --a5e-font-sans-serif;
             font-size: var(--a5e-text-size-xs);
         }
     }

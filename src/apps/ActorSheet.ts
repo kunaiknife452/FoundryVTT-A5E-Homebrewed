@@ -1,6 +1,6 @@
 /* eslint-disable no-continue */
 import { SvelteApplication } from '#runtime/svelte/application';
-import { localize } from '#runtime/svelte/helper';
+import { localize } from '#runtime/util/i18n';
 
 import ActorDocument from './ActorDocument';
 
@@ -88,6 +88,10 @@ export default class ActorSheet extends SvelteApplication {
     });
   }
 
+  get document() {
+    return this.actor;
+  }
+
   get object() {
     return this.actor;
   }
@@ -116,7 +120,7 @@ export default class ActorSheet extends SvelteApplication {
         label: this.options.token ? 'Token' : 'Prototype Token',
         class: 'configure-token',
         icon: 'fas fa-user-circle',
-        onclick: (event) => this._onConfigureToken(event)
+        onclick: ({ event }) => this._onConfigureToken(event)
       });
     }
 
@@ -126,7 +130,7 @@ export default class ActorSheet extends SvelteApplication {
         class: 'configure-sheet',
         icon: 'fas fa-cog fa-fw',
         title: 'Configure Sheet',
-        onclick: (event) => this._onConfigureSheet(event)
+        onclick: ({ event }) => this._onConfigureSheet(event)
       });
     }
 
@@ -147,7 +151,7 @@ export default class ActorSheet extends SvelteApplication {
           class: 'revert-wrapgate',
           icon: 'fas fa-undo-alt',
           title: 'Revert',
-          onclick: async (event) => {
+          onclick: async ({ event }) => {
             const shouldShow = (shiftKey) => {
               const mode = game.settings.get('warpgate', 'revertButtonBehavior');
               const show = mode === 'menu' ? !shiftKey : shiftKey;
@@ -183,7 +187,7 @@ export default class ActorSheet extends SvelteApplication {
         label: 'Import',
         class: 'import',
         icon: 'fas fa-download',
-        onclick: (event) => this._onImport(event)
+        onclick: ({ event }) => this._onImport(event)
       });
     }
 
@@ -207,6 +211,7 @@ export default class ActorSheet extends SvelteApplication {
   }
 
   _onConfigureToken(event) {
+    console.log(event);
     if (event) event.preventDefault();
     if (this.token) return this.token.sheet.render(true);
     // eslint-disable-next-line new-cap

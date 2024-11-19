@@ -120,6 +120,9 @@ export default class ResourceConsumptionManager {
 
     // Handle class resources
     if (resource === 'classResource') {
+      // eslint-disable-next-line no-param-reassign
+      classIdentifier = classIdentifier.replace('@classResources.', '');
+
       const value = foundry.utils.getProperty(
         this.#actor._source.system,
         `resources.classResources.${classIdentifier}`
